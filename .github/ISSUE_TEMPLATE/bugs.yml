@@ -1,0 +1,27 @@
+name: Bug report
+description: Report bugs with the MOD here
+labels: [bug]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: "Describe your bug here."
+    validations:
+      required: true
+
+  - type: textarea
+    id: terminal
+    attributes:
+      label: ""
+    validations:
+      required: false
+
+  - type: dropdown
+    id: btarget
+    attributes:
+      label: "did it actually happen"
+      options:
+        - "Yes"
+        - "No"
+    validations:
+      required: true
