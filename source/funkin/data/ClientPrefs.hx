@@ -7,6 +7,10 @@ import flixel.util.FlxSave;
 import funkin.backend.DebugDisplay;
 import funkin.input.Controls;
 
+#if android
+import android.os.Build.VERSION as AndroidVersion;
+#end
+
 // i did this cuz options are stupid
 enum abstract VsyncMode(String) from String to String
 {

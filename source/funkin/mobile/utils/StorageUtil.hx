@@ -122,8 +122,8 @@ class StorageUtil
 enum abstract StorageType(String) from String to String
 {
 	final forcedPath = '/storage/emulated/0/';
-	final packageNameLocal = 'com.motorfrog.impostor';
-	final fileLocal = 'ImpostorLegacy';
+	final packageNameLocal = 'com.motorfrog.impostorlegacy';
+	final fileLocal = 'ImpostorLegacy V1.1.2b';
 
 	var EXTERNAL_DATA = "EXTERNAL_DATA";
 	var EXTERNAL_OBB = "EXTERNAL_OBB";

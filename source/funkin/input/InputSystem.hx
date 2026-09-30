@@ -47,7 +47,7 @@ class InputSystem extends EventDispatcher implements flixel.util.IFlxDestroyable
 	/**
 	 * The list of actions checked for, in order of their note direction
 	 */
-	public static var ACTION_LIST:Array<Action> = [NOTE_LEFT, NOTE_DOWN, NOTE_UP, NOTE_RIGHT];
+	public static final ACTION_LIST:Array<Action> = [NOTE_LEFT, NOTE_DOWN, NOTE_UP, NOTE_RIGHT];
 	
 	/**
 	 * The current controls instance used for this input system
@@ -69,7 +69,7 @@ class InputSystem extends EventDispatcher implements flixel.util.IFlxDestroyable
 	var justReleasedGamepadInputs:Array<Array<FlxActionInput>> = [];
 	
 	// cleared out every frame
-	var awaitingEvents:Array<InputEvent> = [];
+	// var awaitingEvents:Array<InputEvent> = [];
 	
 	#if FLX_GAMEINPUT_API
 	var awaitingAxisEvents:Array<{id:FlxGamepadInputID, gamepad:FlxGamepad, timer:Float}> = [];
@@ -99,9 +99,9 @@ class InputSystem extends EventDispatcher implements flixel.util.IFlxDestroyable
 			final justPressed:Action = '$action-press';
 			final justReleased:Action = '$action-release';
 			
-			pressedActions[noteData] = this.controls.actions.get(pressed) ?? throw "Missing Control Bind.\n[If your bind is modded-in, Was it named correctly?]";
-			justPressedActions[noteData] = this.controls.actions.get(justPressed) ?? throw "Missing Control Bind.\n[If your bind is modded-in, Was it named correctly?]";
-			justReleasedActions[noteData] = this.controls.actions.get(justReleased) ?? throw "Missing Control Bind.\n[If your bind is modded-in, Was it named correctly?]";
+			pressedActions[noteData] = this.controls.actions.get(pressed) ?? throw "Missing Control Bind";
+			justPressedActions[noteData] = this.controls.actions.get(justPressed) ?? throw "Missing Control Bind";
+			justReleasedActions[noteData] = this.controls.actions.get(justReleased) ?? throw "Missing Control Bind";
 			
 			justPressedKeyInputs[noteData] = [];
 			justReleasedKeyInputs[noteData] = [];
@@ -177,7 +177,7 @@ class InputSystem extends EventDispatcher implements flixel.util.IFlxDestroyable
 		final noteData:Int = getNoteData(button);
 		if (noteData < 0 || !button.justPressed) return;
 		
-		awaitingEvents.push(new InputEvent(InputEvent.INPUT_PRESSED, false, true, noteData, Device.Touch, noteData, System.getTimer()));
+		dispatchEvent(new InputEvent(InputEvent.INPUT_PRESSED, false, true, noteData, Device.Touch, noteData, System.getTimer()));
 	}
 	
 	/**
@@ -192,7 +192,7 @@ class InputSystem extends EventDispatcher implements flixel.util.IFlxDestroyable
 		final noteData:Int = getNoteData(button);
 		if (noteData < 0) return;
 		
-		awaitingEvents.push(new InputEvent(InputEvent.INPUT_RELEASED, false, true, noteData, Device.Touch, noteData, System.getTimer()));
+	    dispatchEvent(new InputEvent(InputEvent.INPUT_RELEASED, false, true, noteData, Device.Touch, noteData, System.getTimer()));
 	}
 	
 	/**
@@ -225,8 +225,8 @@ class InputSystem extends EventDispatcher implements flixel.util.IFlxDestroyable
 			if (info.gamepad.checkStatus(info.id, JUST_PRESSED)) onInputEvent(InputEvent.INPUT_PRESSED, Gamepad(info.gamepad.id), info.id, info.timer);
 			else if (info.gamepad.checkStatus(info.id, JUST_RELEASED)) onInputEvent(InputEvent.INPUT_RELEASED, Gamepad(info.gamepad.id), info.id, info.timer);
 		}
-		while (awaitingEvents.length > 0)
-			dispatchEvent(awaitingEvents.shift());
+		// while (awaitingEvents.length > 0)
+			// dispatchEvent(awaitingEvents.shift());
 	}
 	
 	public function destroy():Void
@@ -340,7 +340,7 @@ class InputSystem extends EventDispatcher implements flixel.util.IFlxDestroyable
 			@:nullSafety(Off)
 			if (inputs[inputID] != null)
 			{
-				awaitingEvents.push(new InputEvent(event, false, true, noteData, device, inputID, timer));
+				dispatchEvent(new InputEvent(event, false, true, noteData, device, inputID, timer));
 				// if we don't break here, then people would be able to bind multiple controls to the same key
 				// i don't know if we would want that and it's kinda cheaty so i'll just break
 				break;
