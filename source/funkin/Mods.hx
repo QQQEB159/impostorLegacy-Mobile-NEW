@@ -343,8 +343,10 @@ class Mods
 			MusicBeatState.transitionOutState = SwipeTransition;
 		}
 		
+		#if DISCORD_ALLOWED
 		if (pack.discordClientID != null) funkin.api.DiscordClient.rpcId = pack.discordClientID;
 		else funkin.api.DiscordClient.rpcId = DiscordClient.NMV_ID;
+		#end
 		
 		Paths.DEFAULT_FONT = pack.defaultFont != null && FunkinAssets.exists(Paths.font(pack.defaultFont)) ? Paths.font(pack.defaultFont) : Paths.font('vcr.ttf');
 		

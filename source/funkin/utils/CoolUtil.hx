@@ -5,9 +5,14 @@ import openfl.display.BlendMode;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxG;
 
+import lime.app.Application;
+
 /**
 	General Utility class for more one off functions
 **/
+#if cpp
+@:cppFileCode('#include <thread>')
+#end
 @:nullSafety(Strict)
 class CoolUtil
 {
@@ -50,6 +55,17 @@ class CoolUtil
 		}
 		
 		return daList;
+	}
+	
+	public static function colorFromString(color:String):FlxColor
+	{
+		var hideChars = ~/[\t\n\r]/;
+		var color:String = hideChars.split(color).join('').trim();
+		if(color.startsWith('0x')) color = color.substring(color.length - 6);
+
+		var colorNum:Null<FlxColor> = FlxColor.fromString(color);
+		if(colorNum == null) colorNum = FlxColor.fromString('#$color');
+		return colorNum != null ? colorNum : FlxColor.WHITE;
 	}
 	
 	public static function listFromString(string:String):Array<String>
@@ -302,4 +318,23 @@ class CoolUtil
 			FlxG.sound.music.fadeTween = null;
 		}
 	}
+	
+	public static function showPopUp(message:String, title:String):Void
+	{
+		/*#if android
+		android.Tools.showAlertDialog(title, message, {name: "OK", func: null}, null);
+		#else*/
+		FlxG.stage.window.alert(message, title);
+		//#end
+	}
+	
+	#if cpp
+    @:functionCode('
+        return std::thread::hardware_concurrency();
+    ')
+	#end
+    public static function getCPUThreadsCount():Int
+    {
+        return 1;
+    }
 }

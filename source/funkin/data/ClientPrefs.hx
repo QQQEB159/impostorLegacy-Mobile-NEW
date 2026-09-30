@@ -47,6 +47,25 @@ enum abstract VsyncMode(String) from String to String
 @:build(funkin.backend.macro.SaveMacro.buildSaveVars('im gonna make this do smth later okay just not rn'))
 class ClientPrefs
 {
+	// Mobile and Mobile Controls Releated ------------------------------------------------------------------------//
+	@saveVar public static var extraButtons:String = "NONE";
+	
+	@saveVar public static var hitboxPos:Bool = true;
+	
+	@saveVar public static var controlsAlpha:Float = FlxG.onMobile ? 0.6 : 0;
+	
+	@saveVar public static var screensaver:Bool = false;
+	
+	#if android
+	@saveVar public static var storageType:String = (AndroidVersion.SDK_INT > 30) ? "EXTERNAL" : "EXTERNAL_DATA";
+	#end
+	
+	@saveVar public static var hitboxType:String = "Gradient";
+	
+	@saveVar public static var extraButton:Bool = false;
+	
+	@saveVar public static var hitboxLocation:String = 'Bottom';
+	
 	// legacy ------------------------------------------------------------------------//
 	@saveVar public static var finaleState:FinaleState = INACTIVE;
 	
@@ -292,6 +311,7 @@ class ClientPrefs
 	{
 		defaultKeys = keyBinds.copy();
 		defaultGamepadBinds = gamepadBinds.copy();
+		defaultMobileBinds = mobileBinds.copy();
 	}
 	
 	@saveVar(false, false) public static var gamepadBinds:Map<Action, Array<FlxGamepadInputID>> = [
@@ -303,6 +323,15 @@ class ClientPrefs
 	];
 	
 	public static var defaultGamepadBinds:Map<Action, Array<FlxGamepadInputID>> = null;
+	
+	@saveVar(false, false) public static var mobileBinds:Map<Action, Array<MobileInputID>> = [
+		'ui_up' => [UP, NOTE_UP],
+		'ui_left' => [LEFT, NOTE_LEFT],
+		'ui_down' => [DOWN, NOTE_DOWN],
+		'ui_right' => [RIGHT, NOTE_RIGHT]
+	];
+	
+	public static var defaultMobileBinds:Map<Action, Array<MobileInputID>> = null;
 	
 	// Editor Colours ------------------------------------------------------------------------//
 	@saveVar public static var editorUIColor:FlxColor = FlxColor.fromRGB(102, 163, 255);
@@ -365,6 +394,7 @@ class ClientPrefs
 		var save:FlxSave = getControlsSave(); // Placing this in a separate save so that it can be manually deleted without removing your Score and stuff
 		save.data.customControls = keyBinds;
 		save.data.customGamepadControls = gamepadBinds;
+		save.data.customMobileControls = mobileBinds;
 		save.close();
 	}
 	

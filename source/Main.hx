@@ -37,6 +37,19 @@ class Main extends Sprite
 	
 	public function new()
 	{
+		#if mobile
+		#if android
+		StorageUtil.requestPermissions();
+		#end
+		Sys.setCwd(StorageUtil.getStorageDirectory());
+		#end
+		
+		#if cpp
+		cpp.NativeGc.enable(true);
+		#elseif hl
+		hl.Gc.enable(true);
+		#end
+		
 		super();
 		
 		funkin.Mods.updateModList();
@@ -72,6 +85,13 @@ class Main extends Sprite
 			if (e.keyCode == FlxKey.ENTER && e.altKey) e.stopImmediatePropagation();
 		}, false, 100);
 		
+		#if mobile
+		lime.system.System.allowScreenTimeout = ClientPrefs.screensaver;
+		#if android
+		FlxG.android.preventDefaultKeys = [BACK]; 
+		#end
+		#end
+		
 		DebugDisplay.init();
 		
 		FlxG.signals.gameResized.add(onResize);
@@ -103,6 +123,13 @@ class Main extends Sprite
 	static function onResize(w:Int, h:Int)
 	{
 		final scale:Float = Math.max(1, Math.min(w / FlxG.width, h / FlxG.height));
+		
+		if (DebugDisplay.instance != null) 
+		{
+		    #if mobile
+		    DebugDisplay.instance.positionFPS(10, 3, Math.min(w / FlxG.width, h / FlxG.height));
+		    #end
+		}
 		
 		if (FlxG.cameras != null)
 		{

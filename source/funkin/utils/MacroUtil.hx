@@ -28,8 +28,11 @@ class MacroUtil
 	 * 
 	 * You must provide the full path to file
 	 */
+	
 	public static macro function getPrecompliedContent(path:String)
 	{
+		var qqqeb:String = #if ios "../../../../../" #else "" #end;
+		path = qqqeb + path;
 		#if !display
 		if (!sys.FileSystem.exists(path))
 		{

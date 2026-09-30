@@ -29,8 +29,10 @@ class MasterEditorMenu extends MusicBeatState
 	
 	override function create()
 	{
+		#if DISCORD_ALLOWED
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("Editors Main Menu");
+		#end
 		
 		persistentUpdate = true;
 		

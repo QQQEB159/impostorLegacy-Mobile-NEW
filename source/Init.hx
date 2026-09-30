@@ -27,7 +27,9 @@ class Init extends FlxState
 		
 		FlxSprite.defaultAntialiasing = ClientPrefs.globalAntialiasing;
 		
+		#if DISCORD_ALLOWED
 		DiscordClient.check();
+		#end
 		
 		#if MODS_ALLOWED
 		funkin.Mods.pushGlobalMods();
@@ -71,6 +73,8 @@ class Init extends FlxState
 		funkin.scripting.PluginsManager.populate();
 		
 		FunkinAssets.cache.currentTrackedSounds.addPermanentKey('assets/music/freakyMenu.ogg');
+		
+		MobileData.init();
 		
 		super.create();
 		

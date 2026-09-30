@@ -22,6 +22,7 @@ class TurboControl extends FlxBasic // very basic turbo control thingy
 	
 	public var turbos:Array<TurboControl> = [];
 	public var buttons:Null<Array<Int>> = null; // for controllers
+	public var mobileButtons:Null<Array<Int>> = null;
 	public var keys:Array<Int>;
 	
 	public var holding:Bool = false;
@@ -50,6 +51,17 @@ class TurboControl extends FlxBasic // very basic turbo control thingy
 			{
 				justPressed = FlxG.gamepads.anyJustPressed(button);
 				pressed = FlxG.gamepads.anyPressed(button);
+				
+				if (pressed) break;
+			}
+		}
+		
+		if (mobileButtons != null)
+		{
+			for (mobileButton in mobileButtons)
+			{
+				justPressed = (MobileInputManager.instance != null && MobileInputManager.instance.exists && MobileInputManager.instance.buttonJustPressed(mobileButton));
+				pressed = (MobileInputManager.instance != null && MobileInputManager.instance.exists && MobileInputManager.instance.buttonPressed(mobileButton));
 				
 				if (pressed) break;
 			}
@@ -131,6 +143,8 @@ class TurboControl extends FlxBasic // very basic turbo control thingy
 		{
 			instance.buttons = ClientPrefs.gamepadBinds.get(action);
 		}
+		
+		instance.mobileButtons = ClientPrefs.mobileBinds.get(action);
 		
 		return instance;
 	}

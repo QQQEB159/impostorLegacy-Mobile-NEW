@@ -1,17 +1,17 @@
 package funkin.input;
 
+import openfl.events.KeyboardEvent;
+import openfl.events.EventType;
+import openfl.events.EventDispatcher;
+
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.input.FlxInput.FlxInputState;
 import flixel.input.actions.FlxActionInput;
 import flixel.input.actions.FlxAction.FlxActionDigital;
 
-import openfl.events.EventType;
-import openfl.events.EventDispatcher;
-
 import funkin.input.Controls;
-
-import openfl.events.KeyboardEvent;
+import funkin.input.Controls.Action;
 
 import lime.system.System;
 #if FLX_GAMEINPUT_API
@@ -42,12 +42,12 @@ typedef AxisEvent<T> = (id:T, value:Float) -> Void;
  * ```
  */
 @:nullSafety
-class InputSystem implements flixel.util.IFlxDestroyable extends EventDispatcher
+class InputSystem extends EventDispatcher implements flixel.util.IFlxDestroyable
 {
 	/**
 	 * The list of actions checked for, in order of their note direction
 	 */
-	public static final ACTION_LIST:Array<Action> = [NOTE_LEFT, NOTE_DOWN, NOTE_UP, NOTE_RIGHT];
+	public static var ACTION_LIST:Array<Action> = [NOTE_LEFT, NOTE_DOWN, NOTE_UP, NOTE_RIGHT];
 	
 	/**
 	 * The current controls instance used for this input system
@@ -69,7 +69,8 @@ class InputSystem implements flixel.util.IFlxDestroyable extends EventDispatcher
 	var justReleasedGamepadInputs:Array<Array<FlxActionInput>> = [];
 	
 	// cleared out every frame
-	// var awaitingEvents:Array<InputEvent> = [];
+	var awaitingEvents:Array<InputEvent> = [];
+	
 	#if FLX_GAMEINPUT_API
 	var awaitingAxisEvents:Array<{id:FlxGamepadInputID, gamepad:FlxGamepad, timer:Float}> = [];
 	
@@ -98,9 +99,9 @@ class InputSystem implements flixel.util.IFlxDestroyable extends EventDispatcher
 			final justPressed:Action = '$action-press';
 			final justReleased:Action = '$action-release';
 			
-			pressedActions[noteData] = this.controls.actions.get(pressed) ?? throw "Missing Control Bind";
-			justPressedActions[noteData] = this.controls.actions.get(justPressed) ?? throw "Missing Control Bind";
-			justReleasedActions[noteData] = this.controls.actions.get(justReleased) ?? throw "Missing Control Bind";
+			pressedActions[noteData] = this.controls.actions.get(pressed) ?? throw "Missing Control Bind.\n[If your bind is modded-in, Was it named correctly?]";
+			justPressedActions[noteData] = this.controls.actions.get(justPressed) ?? throw "Missing Control Bind.\n[If your bind is modded-in, Was it named correctly?]";
+			justReleasedActions[noteData] = this.controls.actions.get(justReleased) ?? throw "Missing Control Bind.\n[If your bind is modded-in, Was it named correctly?]";
 			
 			justPressedKeyInputs[noteData] = [];
 			justReleasedKeyInputs[noteData] = [];
@@ -165,6 +166,54 @@ class InputSystem implements flixel.util.IFlxDestroyable extends EventDispatcher
 	}
 	
 	/**
+	 * Handles a mobile touch button press.
+	 * 
+	 * The button is converted into an `InputEvent` and queued for dispatch on the next `update()`.
+	 * Extra buttons (and any button without a note direction ID) are ignored.
+	 * @param button The touch button that was just pressed
+	 */
+	public function onButtonDown(button:TouchButton):Void
+	{
+		final noteData:Int = getNoteData(button);
+		if (noteData < 0 || !button.justPressed) return;
+		
+		awaitingEvents.push(new InputEvent(InputEvent.INPUT_PRESSED, false, true, noteData, Device.Touch, noteData, System.getTimer()));
+	}
+	
+	/**
+	 * Handles a mobile touch button release.
+	 * 
+	 * The button is converted into an `InputEvent` and queued for dispatch on the next `update()`.
+	 * Extra buttons (and any button without a note direction ID) are ignored.
+	 * @param button The touch button that was released
+	 */
+	public function onButtonUp(button:TouchButton):Void
+	{
+		final noteData:Int = getNoteData(button);
+		if (noteData < 0) return;
+		
+		awaitingEvents.push(new InputEvent(InputEvent.INPUT_RELEASED, false, true, noteData, Device.Touch, noteData, System.getTimer()));
+	}
+	
+	/**
+	 * Extracts the note direction (0-3) from a touch button's IDs.
+	 * Returns -1 if the button has no note direction (e.g. extra buttons).
+	 */
+	function getNoteData(button:TouchButton):Int
+	{
+		if (button.IDs == null) return -1;
+		
+		for (id in button.IDs)
+		{
+			// MobileInputID is Int-backed; map it back to its enum name to detect note directions.
+			final name = MobileInputID.toStringMap[id];
+			if (name != null && name.startsWith("NOTE")) return id;
+		}
+		
+		return -1;
+	}
+	
+	/**
 	 * Dispatches all awaiting input events
 	 */
 	@:nullSafety(Off)
@@ -176,8 +225,8 @@ class InputSystem implements flixel.util.IFlxDestroyable extends EventDispatcher
 			if (info.gamepad.checkStatus(info.id, JUST_PRESSED)) onInputEvent(InputEvent.INPUT_PRESSED, Gamepad(info.gamepad.id), info.id, info.timer);
 			else if (info.gamepad.checkStatus(info.id, JUST_RELEASED)) onInputEvent(InputEvent.INPUT_RELEASED, Gamepad(info.gamepad.id), info.id, info.timer);
 		}
-		// while (awaitingEvents.length > 0)
-		// 	dispatchEvent(awaitingEvents.shift());
+		while (awaitingEvents.length > 0)
+			dispatchEvent(awaitingEvents.shift());
 	}
 	
 	public function destroy():Void
@@ -258,8 +307,11 @@ class InputSystem implements flixel.util.IFlxDestroyable extends EventDispatcher
 		switch device
 		{
 			case Keys:
+				#if debug
+				@:privateAccess if (!FlxG.keys._keyListMap.exists(inputID)) return;
+				#end
 				// with lime, it counts repeated key inputs when you hold down the key.
-				if (#if debug @:privateAccess !FlxG.keys._keyListMap.exists(inputID) || #end!FlxG.keys.checkStatus(inputID, inputState)) return;
+				if (!FlxG.keys.checkStatus(inputID, inputState)) return;
 			case _:
 		}
 		
@@ -270,12 +322,14 @@ class InputSystem implements flixel.util.IFlxDestroyable extends EventDispatcher
 				{
 					case Keys: justPressedKeyInputs;
 					case Gamepad(_): justPressedGamepadInputs;
+					case Touch: [];
 				}
 			case InputEvent.INPUT_RELEASED:
 				switch device
 				{
 					case Keys: justReleasedKeyInputs;
 					case Gamepad(_): justReleasedGamepadInputs;
+					case Touch: [];
 				}
 			default:
 				throw "Invalid Event";
@@ -286,7 +340,7 @@ class InputSystem implements flixel.util.IFlxDestroyable extends EventDispatcher
 			@:nullSafety(Off)
 			if (inputs[inputID] != null)
 			{
-				dispatchEvent(new InputEvent(event, false, true, noteData, device, inputID, timer));
+				awaitingEvents.push(new InputEvent(event, false, true, noteData, device, inputID, timer));
 				// if we don't break here, then people would be able to bind multiple controls to the same key
 				// i don't know if we would want that and it's kinda cheaty so i'll just break
 				break;

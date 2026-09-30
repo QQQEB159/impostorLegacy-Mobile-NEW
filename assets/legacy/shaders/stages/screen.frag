@@ -2,7 +2,7 @@
 
 uniform float block;
 
-vec4 screenColor = vec4(0., 198. / 255. * .75, 134 / 255. * .75, .75);
+vec4 screenColor = vec4(0., 198. / 255. * .75, 134. / 255. * .75, .75);
 
 float intensity(vec4 color) {
 	return max(max(color.r, color.g), color.b);
@@ -14,13 +14,13 @@ void main() {
 	vec2 coord = (floor(openfl_TextureCoordv * px) / px);
 	
 	vec4 color = vec4(1., 1., 1., 0.);
-	for (int x = -3; x < 3; x ++)
+	for (float x = -3.; x < 3.; x ++)
 	{
-		for (int y = -3; y < 3; y ++)
+		for (float y = -3.; y < 3.; y ++)
 		{
 			// darkens 6*6 around to get like more "noticeable" outlines. its kinda butt but it wokrs
 			vec4 p = texture2D(bitmap, coord + vec2(x / px.x / 6., y / px.y / 6.));
-			color.rgb = (color.a == 0 ? p.rgb : mix(color.rgb, min(color.rgb, p.rgb), .05));
+			color.rgb = (color.a == 0. ? p.rgb : mix(color.rgb, min(color.rgb, p.rgb), .05));
 			color.a = min(color.a + p.a / pow(5., 2.) * 3., 1.);
 		}
 	}
