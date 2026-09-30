@@ -34,7 +34,9 @@ class CosmicubeSelectState extends AmongUIState
 		CosmicubeData.reload();
 		CosmeticsSubstate.preloadForFreeplay();
 		
+		#if DISCORD_ALLOWED
 		DiscordClient.changePresence("Cosmicube Menu");
+		#end
 		
 		var prevMod:Null<String> = Mods.currentModDirectory;
 		Mods.currentModDirectory = null;

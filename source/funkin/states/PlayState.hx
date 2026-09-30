@@ -1383,8 +1383,10 @@ class PlayState extends MusicBeatState
 		
 		if (paused) audio.pause();
 		
+		#if DISCORD_ALLOWED
 		// Updating Discord Rich Presence (with Time Left)
 		if (automatedDiscord) DiscordClient.changePresence(rpcDescription, rpcSongName, null, true, songLength);
+		#end
 		
 		scripts.call('onSongStart', []);
 		callHUDFunc(hud -> hud.onSongStart());
@@ -1887,8 +1889,10 @@ class PlayState extends MusicBeatState
 	 */
 	inline function resetDiscordRPC(showTime:Bool = false)
 	{
+		#if DISCORD_ALLOWED
 		if (!showTime) DiscordClient.changePresence(rpcDescription, rpcSongName, dad.healthIcon);
 		else DiscordClient.changePresence(rpcDescription, rpcSongName, dad.healthIcon, true, songLength - Conductor.songPosition - ClientPrefs.noteOffset);
+		#end
 	}
 	
 	function resyncVocals():Void
@@ -2260,7 +2264,9 @@ class PlayState extends MusicBeatState
 		audio?.pause();
 		openSubState(new PauseSubState());
 		
+		#if DISCORD_ALLOWED
 		if (automatedDiscord) DiscordClient.changePresence(rpcPausedDescription, rpcSongName);
+		#end
 	}
 	
 	function openChartEditor():Void
@@ -2286,7 +2292,9 @@ class PlayState extends MusicBeatState
 		disableModifiers();
 		FlxG.switchState(() -> new CharacterEditorState(SONG.player2, true));
 		
+		#if DISCORD_ALLOWED
 		DiscordClient.changePresence("Character Editor", null, null, true);
+		#end
 	}
 	
 	public function updateScoreBar(miss:Bool = false):Void
@@ -2325,7 +2333,9 @@ class PlayState extends MusicBeatState
 				openSubState(new GameOverSubstate(char));
 				
 				// Game Over doesn't get his own variable because it's only used here
+				#if DISCORD_ALLOWED
 				if (automatedDiscord) DiscordClient.changePresence("Game Over - " + rpcDescription, rpcSongName);
+				#end
 				
 				isDead = true;
 				totalBeat = 0;

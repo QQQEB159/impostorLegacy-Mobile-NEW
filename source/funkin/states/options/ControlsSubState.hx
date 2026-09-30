@@ -268,6 +268,7 @@ class ControlsSubState extends MusicBeatSubstate
 				{
 					case Keys: FlxG.keys.firstJustPressed();
 					case Gamepad(id): FlxG.gamepads.getByID(id).firstJustPressedID();
+					case Touch: -1;
 				}
 				
 				if (inputID > -1)
@@ -592,6 +593,7 @@ class ControlsOption extends FlxSpriteContainer
 		{
 			case Keys: InputFormatter.getKeyName(inputID);
 			case Gamepad(id): FlxG.gamepads.getByID(id).getInputLabel(inputID).toUpperCase();
+			case Touch: '';
 		};
 		binds.members[index].alpha = alpha;
 	}

@@ -256,7 +256,7 @@ class DebugDisplay extends Sprite
 		return external.Native.getTaskMemory();
 	}
 	
-	inline function positionFPS(X:Float, Y:Float, ?scale:Float = 1)
+	public inline function positionFPS(X:Float, Y:Float, ?scale:Float = 1)
 	{
  		scaleX = scaleY = #if mobile (scale > 1 ? scale : 1) #else (scale < 1 ? scale : 1) #end;
  		x = FlxG.game.x + X;
