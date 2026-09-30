@@ -74,6 +74,8 @@ class GameOverSubstate extends MusicBeatSubstate
 	{
 		instance = this;
 		
+		funkin.states.PlayState.qqqeb = false;
+		
 		PlayState.instance?.scripts.set('inGameOver', true);
 		
 		Conductor.songPosition = 0;

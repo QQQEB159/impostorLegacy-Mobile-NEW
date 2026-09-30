@@ -613,6 +613,8 @@ class PlayState extends MusicBeatState
 	// null checking
 	function callHUDFunc(hud:BaseHUD->Void):Void if (playHUD != null) hud(playHUD);
 	
+	public static var qqqeb:Bool = false;
+	
 	override public function create():Void
 	{
 		FlxG.sound.music?.stop();
@@ -623,6 +625,7 @@ class PlayState extends MusicBeatState
 		
 		skipCountdown = false;
 		countdownSounds = true;
+		qqqeb = true;
 		
 		instance = this;
 		
@@ -3344,6 +3347,8 @@ class PlayState extends MusicBeatState
 		Conductor.bpmChangeMap.resize(0);
 		
 		super.destroy();
+		
+		qqqeb = false;
 	}
 	
 	override function stepHit()

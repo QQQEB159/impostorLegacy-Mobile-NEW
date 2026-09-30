@@ -15,6 +15,7 @@ import funkin.objects.menu.AmongControls;
 class OptionsState extends MusicBeatState
 {
 	public static var onPlayState:Bool = false;
+	public static var qqqeb:Bool = false;
 	
 	var options:Array<String> = [
 		'controls',
