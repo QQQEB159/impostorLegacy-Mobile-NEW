@@ -39,23 +39,11 @@ WEBSITE: https://vsimpostor.com/
 # CHANGELOG
 Current version: **1.1.2**
 
-## Modding (? 2026)
-
-### Additions
-- Cosmicube nodes can now have scripts.
-	- Custom item requirements can now be scripted.
-
-### Changes
-- Cosmicube node image loading now only happens when on screen.
-	- Entering the menu should now be less memory intensive.
-
-### Removals
-- Removed `"updogSave"` cosmicube item requirement (obsolete).
-
 ## 1.1.2b (? 2026)
 
 ### Additions
 - Chef BF given a Monotone variant.
+- Added support for custom Monotone pets. (GitHub contribution)
 
 ### Bugfixes
 - Fixed a game breaking issue when opening the Credits during a modded song.
@@ -68,10 +56,15 @@ Current version: **1.1.2**
 - Polus BF's jacket clipping fixed.
 - Esculent's duped icon is removed.
 - Fixed Maroon's stage BF position.
+- A couple charts were fixed. (GitHub contribution)
+- Some stages were optimized.
 
 ### Changes
 - Some more characters have been turned into atlases.
 - Regular BF has been given a windy variant.
+- Playable characters now have a `defeatScared` variant, used both in Defeat and Finale. (GitHub contribution)
+- "WTF" text in O2 now uses the player characters healthbar color. (GitHub contribution)
+- Mods can now call users Discord username with HScript. (GitHub contribution)
 
 ## 1.1.2 (july 23 2026)
 
@@ -92,7 +85,7 @@ Current version: **1.1.2**
 - RHM's Z-value is fixed in the greenhouse stage.
 - Polus Boyfriend's windy variant now has correct looped poses.
 - Maroon's poses are now looped.
-- Fixed inconsistency with Identity Crisis doppelgänger notes. (GitHub pull)
+- Fixed inconsistency with Identity Crisis doppelgänger notes. (GitHub contribution)
 - Grey given a correct healthbar color.
 - A bunch of offsets were fixed.
 - Pink's Pretender death animation was re-exported to fix effects.

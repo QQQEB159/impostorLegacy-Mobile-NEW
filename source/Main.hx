@@ -10,6 +10,10 @@ import flixel.input.keyboard.FlxKey;
 
 import funkin.backend.DebugDisplay;
 
+#if mobile
+import funkin.mobile.states.CopyState;
+#end
+
 @:nullSafety(Strict)
 class Main extends Sprite
 {
@@ -73,7 +77,7 @@ class Main extends Sprite
 		ClientPrefs.loadDefaultKeys();
 		ClientPrefs.tryBindingSave('funkin');
 		
-		final game = new funkin.backend.FunkinGame(startMeta.width, startMeta.height, Init, startMeta.fps, startMeta.fps, true, startMeta.startFullScreen);
+		final game = new funkin.backend.FunkinGame(startMeta.width, startMeta.height, #if (mobile && MODS_ALLOWED) !CopyState.checkExistingFiles() ? CopyState : #end Init, startMeta.fps, startMeta.fps, true, startMeta.startFullScreen);
 		
 		// btw game has to be a variable for this to work ig - Orbyy
 		@:privateAccess

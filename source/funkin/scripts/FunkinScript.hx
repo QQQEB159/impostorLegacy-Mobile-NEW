@@ -80,6 +80,8 @@ class FunkinScript extends insanity.Script implements IFlxDestroyable
 			
 			'funkin.scripts.FunkinScript',
 			
+			'funkin.mobile.utils.TouchUtil',
+			
 			#if VIDEOS_ALLOWED
 			'funkin.video.FunkinVideoSprite'
 			#end
