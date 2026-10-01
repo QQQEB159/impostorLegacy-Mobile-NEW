@@ -59,7 +59,7 @@
 		<log info="INCLUDING ASSETS!!" />
 		<log info="INCLUDING DLC!!" if="DLC" />
 		<assets path="content/securitydlc" embed="false" if="MODS_ALLOWED DLC"/>
-		<assets path="assets/embeds" rename="assets" embed="true"/>
+		<assets path="assets/embeds" rename="assets" embed="false"/>
 		<assets path="assets/legacy" rename="assets"/>
 	</section>
 

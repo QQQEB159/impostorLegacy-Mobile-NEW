@@ -61,7 +61,7 @@ class StoryMenuState extends AmongUIState
 		#end
 		
 		PlayState.missLimit = false;
-		FlxG.mouse.visible = true;
+		//FlxG.mouse.visible = true;
 		
 		persistentUpdate = true;
 		

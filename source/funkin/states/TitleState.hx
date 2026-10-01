@@ -82,16 +82,18 @@ class TitleState extends MusicBeatState
 		
 		super.create();
 		
+		#if !ios
 		#if ASSET_REDIRECT
 		if (Paths.fileExists('images/cursor.png'))
 			FlxG.mouse.load(openfl.display.BitmapData.fromFile(Paths.getPath('images/cursor.png')));
 		#else
 		FlxG.mouse.load('assets/images/cursor.png');
 		#end
+		#end
 		
 		persistentUpdate = true;
 		
-		FlxG.mouse.visible = true;
+		//FlxG.mouse.visible = true;
 	}
 	
 	function startIntro()
@@ -173,7 +175,7 @@ class TitleState extends MusicBeatState
 			return;
 		}
 		
-		final pressedEnter:Bool = FlxG.gamepads.lastActive?.justPressed.START || FlxG.keys.justPressed.ENTER || controls.ACCEPT || FlxG.mouse.justPressed;
+		final pressedEnter:Bool = FlxG.gamepads.lastActive?.justPressed.START || FlxG.keys.justPressed.ENTER || controls.ACCEPT || FlxG.mouse.justPressed || TouchUtil.justPressed;
 		
 		if (!transitioning && skippedIntro)
 		{

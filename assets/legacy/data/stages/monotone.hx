@@ -172,7 +172,7 @@ function onCreatePost()
 	grayscale.attachedSprite = copyPet;
 	copyPet.useRenderTexture = true;
 
-	if (Paths.fileExists('scripts/vent.hx')) initScript('scripts/vent');
+	if (Paths.fileExists('data/scripts/vent.hx')) initScript('data/scripts/vent');
 	
 	// cache characters
 	preloadVariant('falling');

@@ -2280,6 +2280,7 @@ class ChartEditorState extends MusicBeatState
 				PlayState.chartingMode = false;
 				FlxG.switchState(funkin.states.editors.MasterEditorMenu.new);
 				FunkinSound.playMusic(Paths.music('freakyMenu'));
+				FlxG.mouse.visible = false;
 				return;
 			}
 			
@@ -3768,6 +3769,7 @@ class ChartEditorState extends MusicBeatState
 		if (opponentVocals != null) opponentVocals.stop();
 		
 		FlxG.switchState(PlayState.new);
+		FlxG.mouse.visible = false;
 	}
 	
 	public static function playSongFromTimestamp(time:Float)
@@ -3782,6 +3784,7 @@ class ChartEditorState extends MusicBeatState
 		opponentVocals?.stop();
 		
 		FlxG.switchState(PlayState.new);
+		FlxG.mouse.visible = false;
 	}
 	
 	public function togglePause()
@@ -3906,6 +3909,7 @@ class ChartingOptionsSubmenuOLD extends MusicBeatSubstate
 				case 'Exit to Editor Menu':
 					FlxG.switchState(() -> new MasterEditorMenu());
 					FunkinSound.playMusic(Paths.music('freakyMenu'));
+					FlxG.mouse.visible = false;
 			}
 		}
 	}

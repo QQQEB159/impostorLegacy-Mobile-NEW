@@ -100,7 +100,7 @@ class AwardsState extends AmongUIState
 		turboGroup.add(controlLEFT);
 		turboGroup.add(controlRIGHT);
 		
-		FlxG.mouse.visible = true;
+		//FlxG.mouse.visible = true;
 		
 		backButton.setPosition(15, 15);
 		add(backButton).revive();

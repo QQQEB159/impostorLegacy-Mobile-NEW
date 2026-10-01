@@ -168,7 +168,7 @@ class HenryState extends MusicBeatState
 		
 		new FlxTimer().start(3.25, function(tmr:FlxTimer) {
 			canClick = true;
-			FlxG.mouse.visible = true;
+			//FlxG.mouse.visible = true;
 		});
 	}
 	

@@ -186,7 +186,7 @@ class FreeplayState extends AmongUIState
 		PlayState.missLimit = false;
 		
 		persistentUpdate = true;
-		FlxG.mouse.visible = true;
+		//FlxG.mouse.visible = true;
 		
 		initStateScript(); // unnecessary
 		
