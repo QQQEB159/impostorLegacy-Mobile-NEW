@@ -12,6 +12,7 @@ import flixel.util.FlxStringUtil;
 import funkin.objects.HealthIcon;
 
 import flixel.group.FlxSpriteGroup;
+import flixel.input.touch.FlxTouch;
 
 class StoryMenuState extends AmongUIState
 {
@@ -38,6 +39,11 @@ class StoryMenuState extends AmongUIState
 	public var intendedScore:Float = 0;
 	
 	public var canZoom:Bool = true;
+	
+	// --- mobile pinch-to-zoom ---
+	var pinchActive:Bool = false;
+	var pinchDist0:Float = 1;
+	var pinchZoom0:Float = .42;
 	
 	var highscore_string:String;
 	
@@ -223,7 +229,7 @@ class StoryMenuState extends AmongUIState
 	
 	public function onClickNode(node:StoryNode):Void
 	{
-		if (lockMovement) return;
+		if (lockMovement || pinchActive) return;
 		
 		var hitTest = FlxG.mouse.getScreenPosition(camUpper);
 		hitTest.put();
@@ -280,17 +286,19 @@ class StoryMenuState extends AmongUIState
 		{
 			if (FlxG.sound.music != null && FlxG.sound.music.volume < .7) FlxG.sound.music.volume += (.5 * elapsed);
 			
+			updatePinchZoom(); // mobile: 双指捏合缩放，捏合时挂起点击/滚轮逻辑
+			
 			if (controls.UI_LEFT_P) moveCruiser(WEST);
 			if (controls.UI_RIGHT_P) moveCruiser(EAST);
 			if (controls.UI_DOWN_P) moveCruiser(SOUTH);
 			if (controls.UI_UP_P) moveCruiser(NORTH);
 			if (controls.ACCEPT) accept();
 			
-			if (FlxG.mouse.justPressed)
+			if (!pinchActive && FlxG.mouse.justPressed)
 			{
 				wasPressingCruiser = FlxG.mouse.overlaps(cruiser);
 			}
-			else if (FlxG.mouse.justReleased && wasPressingCruiser && FlxG.mouse.overlaps(cruiser))
+			else if (!pinchActive && FlxG.mouse.justReleased && wasPressingCruiser && FlxG.mouse.overlaps(cruiser))
 			{
 				accept();
 			}
@@ -299,7 +307,7 @@ class StoryMenuState extends AmongUIState
 			var hDeadzone:Float = Math.min(950 - (FlxG.height + 800) * (1 - FlxG.camera.zoom), (FlxG.camera.height - cruiser.height) * .5);
 			FlxG.camera.deadzone.set(wDeadzone, hDeadzone, FlxG.camera.width - wDeadzone * 2, FlxG.camera.height - hDeadzone * 2);
 			
-			if (canZoom && FlxG.mouse.wheel != 0) FlxG.camera.zoom = FlxMath.bound(FlxG.camera.zoom + FlxG.mouse.wheel * FlxG.camera.zoom / 10, .25, .45);
+			if (!pinchActive && canZoom && FlxG.mouse.wheel != 0) FlxG.camera.zoom = FlxMath.bound(FlxG.camera.zoom + FlxG.mouse.wheel * FlxG.camera.zoom / 10, .25, .45);
 		}
 		
 		final cruiserScaleMult:Float = (!lockMovement && FlxG.mouse.overlaps(cruiser) ? (FlxG.mouse.pressed && wasPressingCruiser ? .9 : 1.1) : 1);
@@ -311,6 +319,46 @@ class StoryMenuState extends AmongUIState
 		if (weekScore.visible) weekScore.text = ('${highscore_string}: ' + FlxStringUtil.formatMoney(Math.round(lerpScore), false));
 		
 		super.update(elapsed);
+	}
+	
+	// Two-finger pinch zoom. Grabs the first two pressed touches, compares
+	// current distance against the distance recorded when the pinch started,
+	// and scales the camera zoom proportionally (clamped to the same bounds
+	// the mouse wheel uses).
+	function updatePinchZoom():Void
+	{
+		if (!canZoom)
+		{
+			pinchActive = false;
+			return;
+		}
+		
+		var pressedTouches:Array<FlxTouch> = [];
+		for (t in FlxG.touches.list)
+			if (t.pressed) pressedTouches.push(t);
+		
+		if (pressedTouches.length >= 2)
+		{
+			var t0:FlxTouch = pressedTouches[0];
+			var t1:FlxTouch = pressedTouches[1];
+			var dist:Float = Math.sqrt(Math.pow(t1.screenX - t0.screenX, 2) + Math.pow(t1.screenY - t0.screenY, 2));
+			
+			if (!pinchActive)
+			{
+				pinchActive = true;
+				pinchDist0 = dist;
+				pinchZoom0 = FlxG.camera.zoom;
+				wasPressingCruiser = false; // don't treat the first finger as a tap during pinch
+			}
+			else if (pinchDist0 > 0)
+			{
+				FlxG.camera.zoom = FlxMath.bound(pinchZoom0 * (dist / pinchDist0), .25, .45);
+			}
+		}
+		else
+		{
+			pinchActive = false;
+		}
 	}
 	
 	override function closeSubState()

@@ -121,16 +121,24 @@ class FunkinAssets
 	 * Reads a given directory and returns all file names inside.
 	 * 
 	 * if it could not be found, an empty array will be returned.
+	 * 
+	 * The returned list is sorted with a natural order, meaning numeric
+	 * segments are compared by value instead of lexicographically
+	 * (e.g. `week 1, week 2, ..., week 10` instead of `week 1, week 10, week 2`).
 	 */
 	public static function readDirectory(directory:String):Array<String>
 	{
+		var list:Array<String>;
 		#if (MODS_ALLOWED || ASSET_REDIRECT)
-		return FileSystem.exists(directory) ? FileSystem.readDirectory(directory) : []; // doing a check because i want this to maintain parity with ther assets variation
+		list = FileSystem.exists(directory) ? FileSystem.readDirectory(directory) : []; // doing a check because i want this to maintain parity with ther assets variation
 		#else
 		if (directory.trim().length == 0) return [];
 		var dir = Assets.list().filter(string -> string.contains(directory));
-		return dir.map(string -> string.replace(directory, '').replace('/', ''));
+		list = dir.map(string -> string.replace(directory, '').replace('/', ''));
 		#end
+		
+		list.sort(naturalCompare);
+		return list;
 	}
 	
 	public static function isDirectory(directory:String):Bool
@@ -142,6 +150,48 @@ class FunkinAssets
 		if (directory.trim().length == 0) return false;
 		return Assets.list().filter(path -> return path != directory && path.startsWith(directory)).length != 0;
 		#end
+	}
+	
+	/**
+	 * Natural order comparator: numeric runs are compared by their numeric value,
+	 * everything else falls back to plain character comparison.
+	 */
+	static function naturalCompare(a:String, b:String):Int
+	{
+		var i = 0, j = 0;
+		while (i < a.length && j < b.length)
+		{
+			var ca = a.charAt(i);
+			var cb = b.charAt(j);
+			var aIsNum = ca >= '0' && ca <= '9';
+			var bIsNum = cb >= '0' && cb <= '9';
+			
+			if (aIsNum && bIsNum)
+			{
+				var endA = i;
+				while (endA < a.length && a.charAt(endA) >= '0' && a.charAt(endA) <= '9') endA++;
+				var endB = j;
+				while (endB < b.length && b.charAt(endB) >= '0' && b.charAt(endB) <= '9') endB++;
+				
+				var na = Std.parseInt(a.substr(i, endA - i));
+				var nb = Std.parseInt(b.substr(j, endB - j));
+				
+				if (na != null && nb != null && na != nb)
+				{
+					return na < nb ? -1 : 1;
+				}
+				
+				i = endA;
+				j = endB;
+			}
+			else
+			{
+				if (ca != cb) return ca < cb ? -1 : 1;
+				i++;
+				j++;
+			}
+		}
+		return (a.length - i) - (b.length - j);
 	}
 	
 	/**

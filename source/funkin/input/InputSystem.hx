@@ -13,6 +13,8 @@ import flixel.input.actions.FlxAction.FlxActionDigital;
 import funkin.input.Controls;
 import funkin.input.Controls.Action;
 
+import funkin.mobile.input.ButtonsStates;
+
 import lime.system.System;
 #if FLX_GAMEINPUT_API
 import lime.ui.GamepadButton;
@@ -144,7 +146,7 @@ class InputSystem extends EventDispatcher implements flixel.util.IFlxDestroyable
 	 */
 	public function inputPressed(noteData:Int)
 	{
-		return pressedActions[noteData].check();
+		return pressedActions[noteData].check() || mobileNoteStatus(noteData, PRESSED);
 	}
 	
 	/**
@@ -153,7 +155,7 @@ class InputSystem extends EventDispatcher implements flixel.util.IFlxDestroyable
 	 */
 	public function inputJustPressed(noteData:Int)
 	{
-		return justPressedActions[noteData].check();
+		return justPressedActions[noteData].check() || mobileNoteStatus(noteData, JUST_PRESSED);
 	}
 	
 	/**
@@ -162,7 +164,20 @@ class InputSystem extends EventDispatcher implements flixel.util.IFlxDestroyable
 	 */
 	public function inputJustReleased(noteData:Int)
 	{
-		return justReleasedActions[noteData].check();
+		return justReleasedActions[noteData].check() || mobileNoteStatus(noteData, JUST_RELEASED);
+	}
+	
+	/**
+	 * Checks the mobile touch button state for a note direction (0-3).
+	 * MobileInputID.NOTE_LEFT/DOWN/UP/RIGHT are 0-3, so they align with noteData directly.
+	 * Returns false when no mobile controls exist (e.g. desktop builds).
+	 */
+	inline function mobileNoteStatus(noteData:Int, state:ButtonsStates):Bool
+	{
+		final manager = MobileInputManager.instance;
+		if (manager == null) return false;
+		
+		return manager.checkStatus(cast noteData, state);
 	}
 	
 	/**
