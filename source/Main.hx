@@ -48,6 +48,8 @@ class Main extends Sprite
 		Sys.setCwd(StorageUtil.getStorageDirectory());
 		#end
 		
+		funkin.mobile.backend.CrashHandler.init();
+		
 		#if cpp
 		cpp.NativeGc.enable(true);
 		#elseif hl
